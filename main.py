@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 
-# === Membuat 'SQLAlchemy Engine' dari Konfigurasi di File .env -> (Return: Engine)===
+# === Membuat dan Connect 'SQLAlchemy Engine' dari Konfigurasi di File .env -> (Return: Engine)===
 def create_engine_from_env():
     load_dotenv()
 
@@ -23,11 +23,15 @@ def create_engine_from_env():
     try:
         url = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{database}"
         engine = create_engine(url)
-        print("Engine database berhasil dibuat.\n")
+
+        with engine.connect() as _:
+            pass
+
+        print("Koneksi ke database berhasil.\n")
         return engine
     
     except Exception as e:
-        print("Gagal membuat engine database.")
+        print("Gagal terhubung ke database.")
         print(f"Detail error: '{e}'")
         return None
 
@@ -52,17 +56,22 @@ def safe_int_input(prompt, pilihan_valid=None):
 
         return angka
 
-# === Input 'TANGGAL' Aman dengan Format YYYY-MM-DD -> (Return: String Tanggal yang Valid) ===
+# === Input 'TANGGAL' Aman dengan Format YYYY-MM-DD -> (Return: Date yang Valid) ===
 def safe_date_input(prompt):
     while True:
         date_str = input(prompt).strip()
+
+        if date_str == "":
+            today = datetime.now().date()
+            print(f"Berhasil input menggunakan tanggal hari ini: {today}")
+            return today
 
         try:
             parsed_date = datetime.strptime(date_str, "%Y-%m-%d").date()
             return parsed_date
         
         except ValueError:
-            print("Format tanggal harus YYYY-MM-DD. Contoh: 2026-12-01\n")
+            print("Format tanggal harus YYYY-MM-DD. (Contoh: 2026-12-01)\n")
 
 # === Input 'AMOUNT' Aman (Boleh INT / FLOAT) dengan Syarat > 0 -> (Return: Amount FLOAT) ===
 def safe_amount_input(prompt):
@@ -97,7 +106,7 @@ def safe_flow_input(prompt="Masukkan flow (IN/OUT): "):
         if flow in ("IN", "OUT"):
             return flow
         
-        print('Flow harus "IN" / "OUT".\n')
+        print('Flow harus "IN" / "OUT".')
 
 # === Menjalankan Query 'SELECT' -> (Return: DataFrame) ===
 def run_select_df(engine, query, params=None):
@@ -172,9 +181,27 @@ def show_categories(engine, flow=None):
     show_dataframe(df)
     return df
 
+# === Menampilkan Tabel TRANSACTIONS (JOIN category_name) ALL DATA ===
+def show_transactions_view_all(engine):
+    print(f"\n-------------------------- TABLE TRANSACTIONS (VIEW ALL) -------------------------")
+    query = """
+        SELECT
+            t.trx_id,
+            t.trx_date,
+            t.flow,
+            c.category_name,
+            t.amount,
+            t.note
+        FROM transactions t
+        JOIN categories c ON t.category_id = c.category_id
+        ORDER BY t.trx_date DESC, t.trx_id DESC
+    """
+    df = run_select_df(engine, query)
+    show_dataframe(df)
+
 # === Menampilkan Tabel TRANSACTIONS (JOIN category_name) dengan Default LIMIT: 20 ===
-def show_transactions_view_all(engine, limit=20):
-    print(f"\n-------------------- TABLE TRANSACTIONS (VIEW ALL - LIMIT {limit}) -------------------")
+def show_transactions_latest(engine, limit=20):
+    print(f"\n------------------------- TABLE TRANSACTIONS (LATEST {limit}) ------------------------")
     query = """
         SELECT
             t.trx_id,
@@ -235,7 +262,7 @@ def show_table_menu(engine):
                 print("3. View OUT Categories")
                 print("4. Back\n")
 
-                sub = safe_int_input("Piih menu (1-4): ", range(1, 5))
+                sub = safe_int_input("Pilih menu (1-4): ", range(1, 5))
 
                 if sub == 1:
                     show_categories(engine)
@@ -249,16 +276,19 @@ def show_table_menu(engine):
         elif choice == 2:
             while True:
                 print("\n------ Sub-Menu 2: TABLE TRANSACTIONS ------")
-                print("1. View All Transactions (Default limit: 20)")
-                print("2. Filter by Flow (IN / OUT)")
-                print("3. Back\n")
+                print("1. View All Transactions")
+                print("2. View Latest Transactions (20)")
+                print("3. Filter by Flow (IN / OUT)")
+                print("4. Back\n")
 
-                sub = safe_int_input("Pilih menu (1-3): ", range(1, 4))
+                sub = safe_int_input("Pilih menu (1-4): ", range(1, 5))
 
                 if sub == 1:
                     show_transactions_view_all(engine)
                 elif sub == 2:
-                    flow = safe_flow_input("\nMasukkan flow (IN / OUT): ")
+                    show_transactions_latest(engine)
+                elif sub == 3:
+                    flow = safe_flow_input("\nMasukkan flow (IN/OUT): ")
                     show_transactions_filter_flow(engine, flow)
                 else:
                     break
@@ -301,6 +331,10 @@ def get_basic_stats(engine, flow=None):
 
     df = run_select_df(engine, query, params=params)
 
+    if df.empty:
+        print("(Gagal mengambil data statistik dari database.)")
+        return 0, 0, 0
+
     total_trx = df.loc[0, "total_transaksi"] or 0
     total_amount = df.loc[0, "total_amount"] or 0
     avg_amount = df.loc[0, "avg_amount"] or 0
@@ -332,12 +366,7 @@ def show_stats_per_category_by_flow(engine, flow):
 
     df = run_select_df(engine, query, params={"flow": flow})
 
-    if df.empty:
-        print("(Tidak ada data OUT untuk dihitung.)\n")
-        return
-    
-    print(df.to_string(index=False))
-    print("")
+    show_dataframe(df)
 
 # ========== OPSI MENU 2: SHOW STATISTIK ==========
 def show_statistik_menu(engine):
@@ -433,7 +462,7 @@ def plot_top5_out_categories(engine):
     plt.figure()
     sns.barplot(data=df, x="total_out", y="category_name")
 
-    plt.title("Top 5 OUT Categories (Total Amount)")
+    plt.title("Top 5 OUT Categories")
     plt.xlabel("Total OUT (SUM Amount)")
     plt.ylabel("Category")
 
@@ -447,7 +476,7 @@ def plot_top5_out_categories(engine):
 def show_visualization_menu(engine):
     while True:
         print("\n=== Menu 3: Data Visualization ===")
-        print("1. Histogram Amount")
+        print("1. Histogram Amount (All Transactions)")
         print("2. Top 5 OUT Categories")
         print("3. Back\n")
 
@@ -477,12 +506,13 @@ def add_transaction(engine):
     """
     print("\n---------- ADD TRANSACTION ----------")
 
-    trx_date = safe_date_input("Masukkan trx_date (YYYY-MM-DD): ")
-    amount = safe_amount_input("Masukkan amount (> 0): ")
-    flow = safe_flow_input("Masukkan flow transaksi (IN/OUT): ")
+    trx_date = safe_date_input("Invalid input. Masukkan trx_date (YYYY-MM-DD) [Enter = Tanggal hari ini]: ")
+    amount = safe_amount_input("\nMasukkan amount (> 0): ")
+    flow = safe_flow_input("\nMasukkan flow transaksi (IN/OUT): ")
 
     print("\nDaftar Categories (Sesuai flow transaksi):")
     df_cat = show_categories(engine, flow=flow)
+
     if df_cat.empty:
         print(f"(Tidak ada kategori flow {flow}. Tambahkan category dulu.)\n")
         return
@@ -490,30 +520,30 @@ def add_transaction(engine):
     valid_ids = set(df_cat["category_id"])
 
     while True:
-        category_id = safe_int_input(f"\nPilih category_id dari Tabel Categories {flow} (0=Back, 9=Ganti Flow): ")
+        category_id = safe_int_input("Pilih category_id (0=Ganti Flow): ")
 
         if category_id == 0:
-            print("\nInput transaksi dibatalkan.")
-            return
-        
-        if category_id == 9:
-            flow = safe_flow_input("\nMasukkan flow transaksi (IN/OUT): ")
+            while True:
+                flow = safe_flow_input("\nMasukkan flow transaksi (IN/OUT): ")
 
-            print("\nDaftar Categories (Sesuai flow transaksi):")
-            df_cat = show_categories(engine, flow=flow)
-            if df_cat.empty:
-                print(f"(Tidak ada kategori flow {flow}. Tambahkan kategori dulu.)\n")
-                return
-            
-            valid_ids = set(df_cat["category_id"])
+                print("\nDaftar Categories (Sesuai flow transaksi):")
+                df_cat = show_categories(engine, flow=flow)
+
+                if df_cat.empty:
+                    print(f"(Tidak ada kategori flow {flow}. Coba flow lain.)\n")
+                    continue
+                
+                valid_ids = set(df_cat["category_id"])
+                break
+
             continue
 
         if category_id in valid_ids:
             break
 
-        print("category_id tidak sesuai flow transaksi. Pilih dari daftar.")
+        print("category_id tidak sesuai. Pilih dari daftar Tabel Categories.")
 
-    note = input("Masukkan note (Opsional): ").strip()
+    note = input("\nMasukkan note (Opsional): ").strip()
     if note == "":
         note = None
 
@@ -531,7 +561,7 @@ def add_transaction(engine):
 
     success = run_execute(engine, query, params=params)
     if success:
-        print("\nTransaction added successfully.\n")
+        print("\nTransaction added successfully.")
 
 # === ADD DATA New Category ke Tabel CATEGORIES ===
 def add_category(engine):
@@ -551,12 +581,12 @@ def add_category(engine):
     print("\nSilakan tambah category baru.")
 
     while True:
-        category_name = input("Masukkan category_name: ").strip()
+        category_name = input("\nMasukkan category_name: ").strip()
         if category_name != "":
             break
         print("\ncategory_name tidak boleh kosong.\n")
 
-    flow = safe_flow_input("Masukkan flow category (IN/OUT): ")
+    flow = safe_flow_input("\nMasukkan flow category (IN/OUT): ")
 
     query = """
         INSERT INTO categories (category_name, flow)
@@ -567,7 +597,7 @@ def add_category(engine):
         with engine.begin() as connection:
             connection.execute(text(query), {"category_name": category_name, "flow": flow})
         
-        print(f"\nNew Category Added Successfully: {category_name}")
+        print(f'\nNew Category Added Successfully: "{category_name}"')
         print("\nDaftar Categories terbaru:")
         show_categories(engine)
 
@@ -594,6 +624,139 @@ def add_data_menu(engine):
             add_category(engine)
         else:
             return
+        
+# ===========================================================
+#                     FEATURE 5: DELETE DATA
+# ===========================================================
+
+# === DELETE DATA Transaksi dari Tabel TRANSACTIONS by trx_id ===
+def delete_transaction(engine):
+    """
+    Flow:
+    1) Tampilkan seluruh transaksi
+    2) User pilih trx_id (0=Back)
+    3) Validasi trx_id terdaftar
+    4) Konfirmasi hapus
+    5) Delete
+    """
+    print("\n------------------------------- DELETE TRANSACTION -------------------------------")
+
+    query_list_transaction = """
+        SELECT
+            t.trx_id,
+            t.trx_date,
+            t.flow,
+            c.category_name,
+            t.amount,
+            t.note
+        FROM transactions t
+        JOIN categories c ON t.category_id = c.category_id
+        ORDER BY t.trx_date DESC, t.trx_id DESC
+    """
+
+    df = run_select_df(engine, query_list_transaction)
+    show_dataframe(df)
+
+    if df.empty:
+        return
+
+    valid_ids = set(df["trx_id"])
+
+    while True:
+        trx_id = safe_int_input("Masukkan trx_id yang mau dihapus (0=Back): ")
+        if trx_id == 0:
+            print("Batal delete transaction.")
+            return
+        if trx_id in valid_ids:
+            break
+        print("trx_id tidak ditemukan. Pilih dari tabel di atas.")
+
+    confirm = input(f"\nYakin hapus trx_id = {trx_id}? (Y/N): ").strip().lower()
+    if confirm != "y":
+        print("\nBatal delete transaction.")
+        return
+    
+    query_delete_transaction = """
+        DELETE FROM transactions
+        WHERE trx_id = :trx_id
+    """
+    success = run_execute(engine, query_delete_transaction, params={"trx_id": trx_id})
+
+    if success:
+        print("\nTransaction deleted successfully.")
+
+# === DELETE DATA Category dari Tabel CATEGORIES by category_id ===
+def delete_category(engine):
+    """
+    Flow:
+    1) Tampilkan category_id terdaftar
+    2) User pilih category_id (0=Back)
+    3) Validasi category_id terdaftar
+    4) Validasi gagal hapus category jika masih dipakai di tabel transactions
+    5) Konfirmasi hapus
+    6) Delete
+    """
+    print("\n------- DELETE CATEGORY -------")
+
+    query_list_category = """
+        SELECT category_id, category_name, flow
+        FROM categories
+        ORDER BY category_id
+    """
+    df = run_select_df(engine, query_list_category)
+    show_dataframe(df)
+
+    if df.empty:
+        return
+    
+    valid_ids = set(df["category_id"])
+
+    while True:
+        category_id = safe_int_input("Masukkan category_id yang mau dihapus (0=Back): ")
+        if category_id == 0:
+            print("\nBatal delete category.")
+            return
+        if category_id in valid_ids:
+            break
+        print("category_id tidak ada di daftar. Pilih dari tabel categories yang ditampilkan.")
+
+    confirm = input(f"\nYakin hapus category_id = {category_id}? (Y/N): ").strip().lower()
+    if confirm != "y":
+        print("\nBatal delete category.")
+        return
+    
+    query_delete_category = """
+        DELETE FROM categories
+        WHERE category_id = :category_id
+    """
+
+    try:
+        with engine.begin() as connection:
+            connection.execute(text(query_delete_category), {"category_id": category_id})
+
+        print("\nCategory deleted successfully.")
+
+    except Exception as e:
+        print("Gagal menghapus category.")
+        print("Kemungkinan category masih dipakai di tabel transactions.")
+        print(f"Detail error: {e}")
+
+# ========== OPSI MENU 5: DELETE DATA ==========
+def delete_data_menu(engine):
+    while True:
+        print("\n=== Menu 5: DELETE DATA ===")
+        print("1. Delete Transaction")
+        print("2. Delete Category")
+        print("3. Back\n")
+
+        choice = safe_int_input("Pilih menu (1-3): ", range(1,4))
+
+        if choice == 1:
+            delete_transaction(engine)
+        elif choice == 2:
+            delete_category(engine)
+        else:
+            return
 
 # ===========================================================
 #                      MAIN PROGRAM MENU
@@ -614,10 +777,11 @@ def main():
             print("2. Show Statistik")
             print("3. Data Visualization")
             print("4. Add Data")
+            print("5. Delete Data")
             print("0. Exit")
             print("=======================\n")
 
-            choice = safe_int_input("Pilih menu (0-4): ", range(5))
+            choice = safe_int_input("Pilih menu (0-5): ", range(6))
 
             if choice == 1:
                 show_table_menu(engine)
@@ -627,6 +791,8 @@ def main():
                 show_visualization_menu(engine)
             elif choice == 4:
                 add_data_menu(engine)
+            elif choice == 5:
+                delete_data_menu(engine)
             else:
                 print("\nTerima kasih, program dihentikan.")
                 break
@@ -636,7 +802,7 @@ def main():
 
     finally:
         engine.dispose()
-        print("Engine koneksi database berhasil ditutup.")
+        print("Koneksi database berhasil ditutup.\n")
 
 if __name__ == "__main__":
     main()

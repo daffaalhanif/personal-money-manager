@@ -5,7 +5,7 @@
 -- Composition: OUT=60, IN=40
 -- =========================================================
 
-CREATE DATABASE m1_capst_money_manager;
+CREATE DATABASE IF NOT EXISTS m1_capst_money_manager;
 USE m1_capst_money_manager;
 
 DROP TABLE IF EXISTS transactions;
@@ -70,7 +70,7 @@ INSERT INTO transactions (trx_date, amount, flow, category_id, note) VALUES
 ('2026-02-16', 2000000.00, 'IN', 1, 'Weekly salary'),
 ('2026-02-23', 2000000.00, 'IN', 1, 'Weekly salary'),
 ('2026-03-02', 2000000.00, 'IN', 1, 'Weekly salary'),
-('2026-03-09', 2000000.00, 'IN', 1, 'Weekly salary'),
+('2026-03-06', 2000000.00, 'IN', 1, 'Weekly salary'),
 
 -- Freelance - 24
 ('2026-01-03',  250000.00, 'IN', 2, 'Freelance: quick edit'),
@@ -91,20 +91,20 @@ INSERT INTO transactions (trx_date, amount, flow, category_id, note) VALUES
 ('2026-02-26',  150000.00, 'IN', 2, 'Freelance: minor edit'),
 ('2026-02-28',  420000.00, 'IN', 2, 'Freelance: bug fix'),
 ('2026-03-03',  380000.00, 'IN', 2, 'Freelance: report + handover'),
-('2026-03-05',  700000.00, 'IN', 2, 'Freelance: client retainer'),
-('2026-03-06',  220000.00, 'IN', 2, 'Freelance: urgent request'),
-('2026-03-08',  260000.00, 'IN', 2, 'Freelance: small task'),
-('2026-03-10',  480000.00, 'IN', 2, 'Freelance: integration help'),
-('2026-03-12',  340000.00, 'IN', 2, 'Freelance: UI polishing'),
-('2026-03-14',  520000.00, 'IN', 2, 'Freelance: maintenance support'),
+('2026-03-03',  700000.00, 'IN', 2, 'Freelance: client retainer'),
+('2026-03-04',  220000.00, 'IN', 2, 'Freelance: urgent request'),
+('2026-03-05',  260000.00, 'IN', 2, 'Freelance: small task'),
+('2026-03-06',  480000.00, 'IN', 2, 'Freelance: integration help'),
+('2026-03-06',  340000.00, 'IN', 2, 'Freelance: UI polishing'),
+('2026-03-06',  520000.00, 'IN', 2, 'Freelance: maintenance support'),
 
 -- Dividend - 6
 ('2026-01-15',  120000.00, 'IN', 3, 'Dividend: stock payout'),
 ('2026-02-05',  150000.00, 'IN', 3, 'Dividend: stock payout'),
 ('2026-02-19',  90000.00,  'IN', 3, 'Dividend: stock payout'),
 ('2026-03-01',  110000.00, 'IN', 3, 'Dividend: stock payout'),
-('2026-03-11',  130000.00, 'IN', 3, 'Dividend: stock payout'),
-('2026-03-15',  100000.00, 'IN', 3, 'Dividend: stock payout'),
+('2026-03-03',  130000.00, 'IN', 3, 'Dividend: stock payout'),
+('2026-03-05',  100000.00, 'IN', 3, 'Dividend: stock payout'),
 
 -- ======================
 -- OUT (60)
@@ -129,8 +129,8 @@ INSERT INTO transactions (trx_date, amount, flow, category_id, note) VALUES
 ('2026-02-21',   50000.00, 'OUT', 4, 'Breakfast'),
 ('2026-02-25',  110000.00, 'OUT', 4, 'Dinner'),
 ('2026-03-04',   65000.00, 'OUT', 4, 'Lunch'),
-('2026-03-07',  160000.00, 'OUT', 4, 'Weekly groceries'),
-('2026-03-13',   90000.00, 'OUT', 4, 'Dinner'),
+('2026-03-05',  160000.00, 'OUT', 4, 'Weekly groceries'),
+('2026-03-06',   90000.00, 'OUT', 4, 'Dinner'),
 
 -- Transport - 15
 ('2026-01-02',   18000.00, 'OUT', 5, 'Public transport'),
@@ -147,7 +147,7 @@ INSERT INTO transactions (trx_date, amount, flow, category_id, note) VALUES
 ('2026-02-14',   22000.00, 'OUT', 5, 'Train ticket'),
 ('2026-02-20',   30000.00, 'OUT', 5, 'Commute costs'),
 ('2026-03-02',   42000.00, 'OUT', 5, 'Public transport'),
-('2026-03-12',   35000.00, 'OUT', 5, 'Ride-hailing'),
+('2026-03-05',   35000.00, 'OUT', 5, 'Ride-hailing'),
 
 -- Sport (Tennis only) - 8
 ('2026-01-06',  120000.00, 'OUT', 6, 'Tennis: court rental (1 hour)'),
@@ -157,7 +157,7 @@ INSERT INTO transactions (trx_date, amount, flow, category_id, note) VALUES
 ('2026-02-15',   45000.00, 'OUT', 6, 'Tennis: overgrip pack'),
 ('2026-02-24',  110000.00, 'OUT', 6, 'Tennis: coaching session (private)'),
 ('2026-03-05',  180000.00, 'OUT', 6, 'Tennis: court rental (90 minutes)'),
-('2026-03-14',   90000.00, 'OUT', 6, 'Tennis: training (club session)'),
+('2026-03-06',   90000.00, 'OUT', 6, 'Tennis: training (club session)'),
 
 -- Investment - 7
 ('2026-01-09',  500000.00, 'OUT', 7, 'Investment: stock top-up'),
@@ -165,14 +165,14 @@ INSERT INTO transactions (trx_date, amount, flow, category_id, note) VALUES
 ('2026-02-09',  750000.00, 'OUT', 7, 'Investment: mutual fund DCA'),
 ('2026-02-23',  600000.00, 'OUT', 7, 'Investment: stock top-up'),
 ('2026-03-01',  400000.00, 'OUT', 7, 'Investment: bond fund top-up'),
-('2026-03-08',  550000.00, 'OUT', 7, 'Investment: crypto DCA'),
-('2026-03-15',  650000.00, 'OUT', 7, 'Investment: mutual fund DCA'),
+('2026-03-03',  550000.00, 'OUT', 7, 'Investment: crypto DCA'),
+('2026-03-05',  650000.00, 'OUT', 7, 'Investment: mutual fund DCA'),
 
 -- Subscription - 4
 ('2026-01-01',   59000.00, 'OUT', 8, 'Subscription: music streaming'),
 ('2026-02-01',   59000.00, 'OUT', 8, 'Subscription: music streaming'),
 ('2026-03-01',   99000.00, 'OUT', 8, 'Subscription: video streaming'),
-('2026-03-10',   35000.00, 'OUT', 8, 'Subscription: cloud storage'),
+('2026-03-02',   35000.00, 'OUT', 8, 'Subscription: cloud storage'),
 
 -- Books - 2
 ('2026-01-17',  125000.00, 'OUT', 9, 'Books: business analysis book'),
