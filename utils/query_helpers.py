@@ -3,7 +3,6 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
 
-
 # === Menjalankan Query 'SELECT' ===
 def run_select_df(engine, query: str, params=None) -> pd.DataFrame:
     """

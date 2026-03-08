@@ -1,7 +1,6 @@
 from datetime import datetime, date
 
 
-
 # === Input 'ANGKA' Aman Agar Program Tidak Crash Jika User Salah Input ===
 def safe_int_input(prompt: str, pilihan_valid=None) -> int:
     while True:
@@ -68,7 +67,7 @@ def safe_amount_input(prompt: str) -> float:
         return amount
 
 # === Input 'FLOW' Aman dengan Pilihan Valid (IN/OUT) ===
-def safe_flow_input(prompt: str = "Masukkan flow (IN/OUT): ") -> str:
+def safe_flow_input(prompt: str) -> str:
     while True:
         flow = input(prompt).strip().upper()
 

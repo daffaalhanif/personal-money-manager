@@ -2,7 +2,7 @@ from sqlalchemy.exc import IntegrityError
 from utils.query_helpers import run_select_df, run_execute
 from utils.formatters import show_dataframe, format_rupiah
 from utils.input_helpers import safe_int_input, safe_confirm_input
-from features.table import get_transactions_df
+from features.table import get_transactions_df, show_categories
 
 
 # === DELETE DATA Transaksi dari Tabel TRANSACTIONS by trx_id ===
@@ -60,6 +60,8 @@ def delete_transaction(engine) -> None:
 
     if success:
         print(f"\nTransaksi berhasil dihapus! (ID {trx_id} | {row['flow']} | {row['category_name']} | {format_rupiah(row['amount'])})")
+    else:
+        print("Transaksi gagal dihapus.")
 
 # === DELETE DATA Category dari Tabel CATEGORIES by category_id ===
 def delete_category(engine) -> None:
@@ -116,8 +118,8 @@ def delete_category(engine) -> None:
 
     try:
         run_execute(engine, query_delete_category, {"category_id": category_id})
-
         print(f"\nKategori berhasil dihapus! ({row['category_name']} | {row['flow']})")
+        show_categories(engine)
 
     except IntegrityError:
         print("Gagal: Kategori ini masih dipakai oleh transaksi yang ada.")

@@ -86,27 +86,20 @@ def show_statistik_menu(engine) -> None:
         print("0. Kembali\n")
 
         choice = safe_int_input("Pilih menu (0-5): ", range(6))
-        
-        if choice == 1:
-            total_trx, total_amount, avg_amount = get_basic_stats(engine, flow=None)
-            print("\n--------- STATISTIK SEMUA ---------")
-            print(f"Total Transaksi    : {total_trx}")
-            print(f"Total Nominal      : {format_rupiah(total_amount)}")
-            print(f"Rata-Rata Nominal  : {format_rupiah(avg_amount)}")
 
-        elif choice == 2:
-            total_trx, total_amount, avg_amount = get_basic_stats(engine, flow="IN")
-            print("\n---------- STATISTIK IN ----------")
+        flow_map = {
+            1: (None, "STATISTIK SEMUA"),
+            2: ("IN", "STATISTIK IN"),
+            3: ("OUT", "STATISTIK OUT"),
+        }
+        
+        if choice in flow_map:
+            flow, header = flow_map[choice]
+            total_trx, total_amount, avg_amount = get_basic_stats(engine, flow=flow)
+            print(f"\n---------- {header} ---------")
             print(f"Total Transaksi   : {total_trx}")
             print(f"Total Nominal     : {format_rupiah(total_amount)}")
             print(f"Rata-Rata Nominal : {format_rupiah(avg_amount)}")
-
-        elif choice == 3:
-            total_trx, total_amount, avg_amount = get_basic_stats(engine, flow="OUT")
-            print("\n--------- STATISTIK OUT ---------")
-            print(f"Total Transaksi    : {total_trx}")
-            print(f"Total Nominal      : {format_rupiah(total_amount)}")
-            print(f"Rata-Rata Nominal  : {format_rupiah(avg_amount)}")
 
         elif choice == 4:
             show_stats_per_category_by_flow(engine, "IN")

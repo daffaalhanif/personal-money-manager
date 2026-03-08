@@ -1,7 +1,5 @@
 from db.connection import create_engine_from_env
 from utils.input_helpers import safe_int_input
-from utils.query_helpers import run_select_df, run_execute
-from utils.formatters import show_dataframe, format_rupiah, rupiah_axis_formatter
 from features.table import show_table_menu
 from features.statistic import show_statistik_menu
 from features.visualization import show_visualization_menu

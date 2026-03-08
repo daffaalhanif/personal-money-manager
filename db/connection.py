@@ -2,6 +2,7 @@ import os
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
+
 # === Membuat dan Connect 'SQLAlchemy Engine' dari Konfigurasi di File .env ===
 def create_engine_from_env():
     load_dotenv()

@@ -4,7 +4,7 @@ from utils.formatters import show_dataframe, format_rupiah
 from utils.input_helpers import safe_int_input, safe_flow_input
 
 
-# === Menampilkan Tabel CATEGORIES ===
+# === Menampilkan Tabel CATEGORIES dan Return DataFrame ===
 def show_categories(engine, flow=None) -> pd.DataFrame:
     if flow is None:
         print("\n---- TABEL KATEGORI (SEMUA) ----")
@@ -59,6 +59,7 @@ def show_transactions_view_all(engine) -> None:
     df_display = df.copy()
     df_display["amount"] = df_display["amount"].apply(format_rupiah)
     show_dataframe(df_display)
+    print(f"Total: {len(df)} transaksi\n")
 
 # === Menampilkan Tabel TRANSACTIONS (JOIN category_name) dengan Default LIMIT: 20 ===
 def show_transactions_latest(engine, limit: int = 20) -> None:
