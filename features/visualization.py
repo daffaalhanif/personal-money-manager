@@ -16,6 +16,7 @@ def save_chart(filename: str) -> None:
         plt.savefig(full_path, dpi=150, bbox_inches="tight")
         print(f"\nBerhasil Tersimpan: {full_path}")
 
+
 # === Menampilkan 'BAR CHART' Frekuensi Transaksi per Kategori (IN & OUT) ===
 def plot_trx_count_per_category(engine) -> None:
     query = """
@@ -48,7 +49,7 @@ def plot_trx_count_per_category(engine) -> None:
     df_in = df[df["flow"] == "IN"].sort_values("total_trx", ascending=False)
     df_out = df[df["flow"] == "OUT"].sort_values("total_trx", ascending=False)
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+    _, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
 
     sns.barplot(data=df_in, x="total_trx", y="category_name", color="#27ae60", ax=ax1)
     sns.barplot(data=df_out, x="total_trx", y="category_name", color="#e74c3c", ax=ax2)
@@ -149,7 +150,7 @@ def plot_monthly_cashflow(engine) -> None:
 # ========== OPSI MENU 3: DATA VISUALIZATION ==========
 def show_visualization_menu(engine) -> None:
     while True:
-        print("\n============ Menu 3: Visualisasi Data ===========")
+        print("\n========== Menu 3: Visualisasi Data =========")
         print("1. Frekuensi Transaksi per Kategori IN & OUT")
         print("2. Top 5 Kategori Pengeluaran Terbesar")
         print("3. Monthly Cashflow IN & OUT")
