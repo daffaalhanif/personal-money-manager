@@ -1,5 +1,5 @@
 # Xpense Insight
-Personal Money Manager - Capstone M1
+Personal Money Manager
 
 Aplikasi CLI untuk mencatat dan menganalisis keuangan pribadi.
 Dibangun dengan Python dan MySQL, dengan fitur manajemen transaksi, statistik, dan visualisasi data.
@@ -18,7 +18,7 @@ Dibangun dengan Python dan MySQL, dengan fitur manajemen transaksi, statistik, d
 
 ## Struktur Project
 ```
-m1-personal-money-manager/
+personal-money-manager/
     main.py                         <- entry point, jalankan program dari sini
     db/
         connection.py               <- koneksi ke database MySQL
@@ -32,7 +32,7 @@ m1-personal-money-manager/
         visualization.py            <- Feature 3: chart visualisasi data
         add_data.py                 <- Feature 4: tambah transaksi dan kategori
         delete_data.py              <- Feature 5: hapus transaksi dan kategori
-    m1_capst_money_manager.sql      <- schema database + 100 data transaksi
+    personal_money_manager.sql      <- schema database + 100 data transaksi
     requirements.txt                <- daftar library yang dibutuhkan
     .env                            <- kredensial database (tidak di-push ke GitHub)
 ```
@@ -47,8 +47,8 @@ m1-personal-money-manager/
 
 ### Step 1 - Clone Repository
 ```bash
-git clone https://github.com/daffaalhanif/m1-personal-money-manager.git
-cd m1-personal-money-manager
+git clone https://github.com/daffaalhanif/personal-money-manager.git
+cd personal-money-manager
 ```
 
 ### Step 2 - Buat dan Aktifkan Virtual Environment
@@ -73,12 +73,12 @@ pip install -r requirements.txt
 
 ### Step 4 - Import Database ke MySQL
 ```bash
-mysql -u root -p < m1_capst_money_manager.sql
+mysql -u root -p < personal_money_manager.sql
 ```
 
-Atau buka MySQL Workbench, lalu jalankan file `m1_capst_money_manager.sql` secara manual.
+Atau buka MySQL Workbench, lalu jalankan file `personal_money_manager.sql` secara manual.
 
-File ini otomatis membuat database `m1_capst_money_manager` beserta tabel dan 100 seed data transaksi.
+File ini otomatis membuat database `personal_money_manager` beserta tabel dan 100 seed data transaksi.
 
 ### Step 5 - Buat File .env
 Buat file baru bernama `.env` di root folder, isi dengan:
@@ -87,7 +87,7 @@ DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=password_mysql_kamu
 DB_PORT=3306
-DB_NAME=m1_capst_money_manager
+DB_NAME=personal_money_manager
 ```
 
 Sesuaikan `DB_USER` dan `DB_PASSWORD` dengan kredensial MySQL kamu.
