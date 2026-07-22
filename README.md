@@ -1,57 +1,60 @@
 # Xpense Insight
-Personal Money Manager
 
-Aplikasi CLI untuk mencatat dan menganalisis keuangan pribadi.
-Dibangun dengan Python dan MySQL, dengan fitur manajemen transaksi, statistik, dan visualisasi data.
+<p align="center">
+  <img src="assets/cover.png" alt="Xpense Insight">
+</p>
 
----
-
-## Fitur
-
-- Tampilkan Tabel - Lihat data kategori dan transaksi
-- Statistik - Ringkasan COUNT, SUM, AVG per flow dan kategori
-- Visualisasi - Chart visualisasi data keuangan
-- Tambah Data - Tambah transaksi dan kategori baru
-- Hapus Data - Hapus transaksi dan kategori
+A CLI application for recording and analyzing personal finances.
+Built with Python and MySQL, featuring transaction management, statistics, and data visualization.
 
 ---
 
-## Struktur Project
+## Features
+
+- Display Tables - View category and transaction data
+- Statistics - COUNT, SUM, AVG summary per flow and category
+- Visualization - Financial data visualization charts
+- Add Data - Add new transactions and categories
+- Delete Data - Delete transactions and categories
+
+---
+
+## Project Structure
 ```
-personal-money-manager/
-    main.py                         <- entry point, jalankan program dari sini
+m1-personal-money-manager/
+    main.py                         <- entry point, run the program from here
     db/
-        connection.py               <- koneksi ke database MySQL
+        connection.py               <- MySQL database connection
     utils/
-        input_helpers.py            <- validasi semua input user
-        query_helpers.py            <- eksekusi query SQL (SELECT, INSERT, DELETE)
-        formatters.py               <- format rupiah dan tampilan dataframe
+        input_helpers.py            <- validates all user input
+        query_helpers.py            <- executes SQL queries (SELECT, INSERT, DELETE)
+        formatters.py               <- formats currency (rupiah) and dataframe display
     features/
-        table.py                    <- Feature 1: tampilkan tabel kategori & transaksi
-        statistic.py                <- Feature 2: statistik COUNT, SUM, AVG
-        visualization.py            <- Feature 3: chart visualisasi data
-        add_data.py                 <- Feature 4: tambah transaksi dan kategori
-        delete_data.py              <- Feature 5: hapus transaksi dan kategori
-    personal_money_manager.sql      <- schema database + 100 data transaksi
-    requirements.txt                <- daftar library yang dibutuhkan
-    .env                            <- kredensial database (tidak di-push ke GitHub)
+        table.py                    <- Feature 1: display category & transaction tables
+        statistic.py                <- Feature 2: COUNT, SUM, AVG statistics
+        visualization.py            <- Feature 3: data visualization charts
+        add_data.py                 <- Feature 4: add transactions and categories
+        delete_data.py              <- Feature 5: delete transactions and categories
+    m1_capst_money_manager.sql      <- database schema + 100 seed transactions
+    requirements.txt                <- list of required libraries
+    .env                            <- database credentials (not pushed to GitHub)
 ```
 
 ---
 
-## Cara Menjalankan
+## How to Run
 
-### Prasyarat
+### Prerequisites
 - Python 3.11+
-- MySQL Server aktif
+- Active MySQL Server
 
-### Step 1 - Clone Repository
+### Step 1 - Clone the Repository
 ```bash
-git clone https://github.com/daffaalhanif/personal-money-manager.git
-cd personal-money-manager
+git clone https://github.com/daffaalhanif/m1-personal-money-manager.git
+cd m1-personal-money-manager
 ```
 
-### Step 2 - Buat dan Aktifkan Virtual Environment
+### Step 2 - Create and Activate a Virtual Environment
 ```bash
 python -m venv .venv
 ```
@@ -71,28 +74,28 @@ Windows:
 pip install -r requirements.txt
 ```
 
-### Step 4 - Import Database ke MySQL
+### Step 4 - Import the Database into MySQL
 ```bash
-mysql -u root -p < personal_money_manager.sql
+mysql -u root -p < m1_capst_money_manager.sql
 ```
 
-Atau buka MySQL Workbench, lalu jalankan file `personal_money_manager.sql` secara manual.
+Or open MySQL Workbench and run the `m1_capst_money_manager.sql` file manually.
 
-File ini otomatis membuat database `personal_money_manager` beserta tabel dan 100 seed data transaksi.
+This file automatically creates the `m1_capst_money_manager` database along with its tables and 100 seed transactions.
 
-### Step 5 - Buat File .env
-Buat file baru bernama `.env` di root folder, isi dengan:
+### Step 5 - Create a .env File
+Create a new file named `.env` in the root folder with the following content:
 ```env
 DB_HOST=localhost
 DB_USER=root
-DB_PASSWORD=password_mysql_kamu
+DB_PASSWORD=your_mysql_password
 DB_PORT=3306
-DB_NAME=personal_money_manager
+DB_NAME=m1_capst_money_manager
 ```
 
-Sesuaikan `DB_USER` dan `DB_PASSWORD` dengan kredensial MySQL kamu.
+Adjust `DB_USER` and `DB_PASSWORD` to match your MySQL credentials.
 
-### Step 6 - Jalankan Program
+### Step 6 - Run the Program
 ```bash
 python main.py
 ```
@@ -101,10 +104,10 @@ python main.py
 
 ## Tech Stack
 
-- Python 3.11+  : Bahasa pemrograman utama
-- SQLAlchemy    : Koneksi dan eksekusi query database
-- pandas        : Manipulasi dan tampilan data
-- matplotlib    : Visualisasi chart
-- seaborn       : Styling visualisasi
-- python-dotenv : Load konfigurasi dari .env
-- mysql-connector-python : MySQL Driver
+- Python 3.11+  : Main programming language
+- SQLAlchemy    : Database connection and query execution
+- pandas        : Data manipulation and display
+- matplotlib    : Chart visualization
+- seaborn       : Visualization styling
+- python-dotenv : Loads configuration from .env
+- mysql-connector-python : MySQL driver
